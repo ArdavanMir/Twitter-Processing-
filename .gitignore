@@ -1,0 +1,95 @@
+//import processing.serial.*;
+
+import twitter4j.conf.*;
+import twitter4j.*;
+import twitter4j.auth.*;
+import twitter4j.api.*;
+import java.util.*;
+
+ConfigurationBuilder cb = new ConfigurationBuilder();
+Twitter twitterInstance;
+Query queryForTwitter;
+
+
+ArrayList tweets;
+int i=0;
+int id;
+int currentTweet;
+
+String findString = "#‎Artwee2‬ draw";
+
+//Serial port;
+
+void setup() {
+//println(Serial.list());
+//port = new Serial(this, Serial.list()[0], 9600);
+
+cb.setOAuthConsumerKey("z6woXeaVgYRnfe6pFVsWLQ");
+cb.setOAuthConsumerSecret("QkVZMVWLMVDCgWbXMfY525IevxX8VhqATuZeZVOlZo");
+cb.setOAuthAccessToken("2204011964-YezNodjMO0erZy10JhS7EMID3JmyvukEPePi46A");
+cb.setOAuthAccessTokenSecret("4Jj3ZfBy9jlXfbQu02WucxcM6IrOPcN873HNAWgR3oMve");
+
+twitterInstance=new TwitterFactory( cb.build()).getInstance();
+queryForTwitter=new Query("‪#‎Artwee2‬");
+
+
+size (640, 440);
+FetchTweets();
+thread("refreshTweets");
+
+queryForTwitter.setCount(1);
+
+}
+
+void draw() {
+background(0);
+DrawTweets(); 
+
+}
+
+void DrawTweets() {
+for (i=0; i<tweets.size(); i++) {
+Status t = (Status) tweets.get (i);
+Status s = (Status) tweets.get(currentTweet);
+
+String user = t.getUser().getName();
+String msg = t.getText();
+id = (int) t.getId();
+String incomingText = s.getText();
+
+if(incomingText.equals(findString)){
+  text(incomingText, 20,20,20);}
+
+println(user + ": " + msg);
+println(tweets.size());
+text(user + ": " + msg + id, 20, 15+i*30, width-20, 40);
+
+Date d = t.getCreatedAt();
+println("Tweet by " + user + " at " + d + ": " + msg + id);
+
+  }
+}
+
+///////////////////////////////////////////////
+
+void FetchTweets(){
+try {
+  println ("Searching.... Current time = " + hour() + ":" + minute() + ":" + second());
+  QueryResult result = twitterInstance.search(queryForTwitter);
+  tweets = (ArrayList) result.getTweets();
+} 
+catch (TwitterException te) {
+println("Couldn't connect: " + te);
+}//end of catch
+}//end of Fetch
+
+void refreshTweets(){
+while (true)
+{
+FetchTweets();
+
+println("Updated Tweets"); 
+
+delay(3000);
+}
+}
