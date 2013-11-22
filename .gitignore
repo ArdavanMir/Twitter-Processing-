@@ -57,7 +57,7 @@ String msg = t.getText();
 id = (int) t.getId();
 String incomingText = s.getText();
 
-if(incomingText.equals(findString)){
+if(incomingText.equals(findString)){   ///if you find "#‎Artwee2‬ draw" type incomingText
   text(incomingText, 20,20,20);}
 
 println(user + ": " + msg);
